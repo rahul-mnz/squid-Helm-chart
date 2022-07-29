@@ -5,7 +5,7 @@ Run the CMD -
 > helm upgrade  --install squid . --namespace default
 
 ##### Test the Working of Squid with below cmd
-> curl -x http://<username>:<pasword>@<node-ip>:<node-port> -I https://google.com
+> curl -x http://username:pasword@node-ip:node-port -I https://google.com
 
 ##### Configuring values.yaml
 
