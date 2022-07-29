@@ -27,12 +27,13 @@ proxy:
     - .microsoft.com
 
   enable_auth: true
-  user: squid
+
   auth_config:
     - auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/secrets/auth_file
     - auth_param basic credentialsttl 24 hours
     - auth_param basic realm Squid proxy-caching web server
     - acl authenticated proxy_auth REQUIRED
+  
 
 service:
   type: NodePort
