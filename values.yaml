@@ -1,0 +1,60 @@
+# Default values for squid-deployment.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ubuntu/squid
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: edge
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "squid"
+
+proxy:
+  clients:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+    - 127.0.0.1
+
+  domains:
+    - .facebook.com
+    - .fb.com
+    - .microsoft.com
+
+  enable_auth: true
+  user: squid
+  auth_config:
+    - auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/secrets/auth_file
+    - auth_param basic credentialsttl 24 hours
+    - auth_param basic realm Squid proxy-caching web server
+    - acl authenticated proxy_auth REQUIRED
+
+service:
+  type: NodePort
+  port: 3128
+  targetPort: 3128
+  protocol: TCP
+
+ingress:
+  enabled: false
+  annotations: {}
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

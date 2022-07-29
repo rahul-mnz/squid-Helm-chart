@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "squid-deployment.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "squid-deployment.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config-map: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "squid-deployment.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: squid
+          containerPort: {{ .Values.service.port }}
+          protocol: TCP
+        volumeMounts:
+        - name: squid-config-volume
+          mountPath: /etc/squid/squid.conf
+          subPath: squid.conf        
+        - name: squid-data
+          mountPath: /var/spool/squid
+        - name: squid-auth-file
+          mountPath: /etc/squid/secrets
+      volumes:
+        - name: squid-config-volume
+          configMap:
+            name: {{ include "squid-deployment.fullname" . }}-config
+            items:
+            - key: squid.conf
+              path: squid.conf 
+        - name: squid-auth-file
+          secret:
+            secretName: {{ include "squid-deployment.fullname" . }}-secret
+        - name: squid-data
+          persistentVolumeClaim:
+            claimName: squid-volume-claim
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
