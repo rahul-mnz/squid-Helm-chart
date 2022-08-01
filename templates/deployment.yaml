@@ -15,21 +15,23 @@ spec:
         {{- include "squid-deployment.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-      - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        ports:
-        - name: squid
-          containerPort: {{ .Values.service.port }}
-          protocol: TCP
-        volumeMounts:
-        - name: squid-config-volume
-          mountPath: /etc/squid/squid.conf
-          subPath: squid.conf        
-        - name: squid-data
-          mountPath: /var/spool/squid
-        - name: squid-auth-file
-          mountPath: /etc/squid/secrets
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          - name: squid
+            containerPort: {{ .Values.service.port }}
+            protocol: TCP
+          volumeMounts:
+          - name: squid-config-volume
+            mountPath: /etc/squid/squid.conf
+            subPath: squid.conf        
+          - name: squid-data
+            mountPath: /var/spool/squid
+          - name: squid-auth-file
+            mountPath: /etc/squid/secrets
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
       volumes:
         - name: squid-config-volume
           configMap:
@@ -43,6 +45,7 @@ spec:
         - name: squid-data
           persistentVolumeClaim:
             claimName: squid-volume-claim
+          
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
