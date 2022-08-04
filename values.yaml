@@ -22,8 +22,7 @@ proxy:
     - 127.0.0.1
 
   domains:
-    - .facebook.com
-    - .fb.com
+    - .google.com
     - .microsoft.com
 
   enable_auth: true
@@ -60,7 +59,6 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
-#nodeSelector:
 #  kubernetes.io/hostname: squid-try-m02
 
 tolerations: []

@@ -77,11 +77,11 @@ data:
     # from where browsing should be allowed
     #http_access allow localnet
     {{- if eq .Values.proxy.enable_auth true }}
-    http_access deny permitted authenticated domain_list
+    http_access allow permitted authenticated domain_list
     {{- else }}
-    http_access deny permitted domain_list
+    http_access allow permitted domain_list
     {{- end }}
-    http_access allow permitted
+    # http_access allow permitted
     http_access allow localhost
 
     # And finally deny all other access to this proxy
